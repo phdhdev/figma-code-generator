@@ -10,57 +10,35 @@
     <script src="taskpane.js" type="text/javascript"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
             padding: 20px;
-            background: #f5f5f5;
-            color: #333;
+            background-color: #f5f5f5;
         }
         
         .container {
-            max-width: 400px;
-            margin: 0 auto;
+            max-width: 100%;
         }
         
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        
-        .header p {
-            font-size: 14px;
-            opacity: 0.95;
+        h2 {
+            color: #333;
+            margin-top: 0;
+            font-size: 18px;
         }
         
         .main-section {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 20px;
+            border-radius: 4px;
             margin-bottom: 20px;
+            border: 1px solid #dee2e6;
         }
         
         .code-display {
             background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
             padding: 20px;
             text-align: center;
             margin-bottom: 20px;
@@ -68,193 +46,134 @@
         
         .code-display .label {
             font-size: 12px;
-            color: #6c757d;
+            color: #666;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-bottom: 10px;
             font-weight: 600;
         }
         
         .code-display .code {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
-            color: #667eea;
+            color: #0078d4;
             font-family: 'Courier New', monospace;
             letter-spacing: 2px;
         }
         
         .code-display .code.empty {
             color: #adb5bd;
-            font-size: 18px;
+            font-size: 16px;
         }
         
-        .btn {
+        button {
             width: 100%;
-            padding: 14px 20px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #0078d4;
             color: white;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(0);
+            background-color: #106ebe;
         }
         
         .btn-secondary {
-            background: #e9ecef;
-            color: #495057;
+            background-color: #6c757d;
+            color: white;
         }
         
         .btn-secondary:hover {
-            background: #dee2e6;
+            background-color: #5a6268;
         }
         
-        .btn:disabled {
+        button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none !important;
         }
         
         .status {
             margin-top: 15px;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 13px;
             display: none;
         }
         
         .status.success {
-            background: #d4edda;
+            background-color: #d4edda;
             color: #155724;
-            border: 1px solid #c3e6cb;
             display: block;
         }
         
         .status.error {
-            background: #f8d7da;
+            background-color: #f8d7da;
             color: #721c24;
-            border: 1px solid #f5c6cb;
             display: block;
         }
         
         .status.info {
-            background: #d1ecf1;
+            background-color: #d1ecf1;
             color: #0c5460;
-            border: 1px solid #bee5eb;
             display: block;
         }
         
-        .info-box {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 8px;
-            padding: 15px;
+        .stats-simple {
+            margin-top: 20px;
+            text-align: center;
             font-size: 13px;
-            color: #856404;
+            color: #6c757d;
+        }
+        
+        .stats-simple span {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .info-box {
+            background-color: #e3f2fd;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1976d2;
             line-height: 1.6;
         }
         
         .info-box strong {
             display: block;
             margin-bottom: 8px;
-            color: #533f03;
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .stat-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-card .value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-        
-        .stat-card .label {
-            font-size: 12px;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🎨 Figma Code Generator</h1>
-            <p>Generate unique 6-digit codes</p>
-        </div>
-        
         <div class="main-section">
             <div class="code-display">
                 <div class="label">Generated Code</div>
                 <div class="code empty" id="codeDisplay">Click Generate</div>
             </div>
             
-            <button class="btn btn-primary" id="generateBtn">
+            <button class="btn-primary" id="generateBtn">
                 Generate Unique Code
             </button>
             
-            <button class="btn btn-secondary" id="insertBtn" disabled>
-                Insert at Cursor
+            <button class="btn-secondary" id="insertBtn" disabled>
+                Insert Code
             </button>
             
             <div id="status" class="status"></div>
             
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="value" id="totalCodes">0</div>
-                    <div class="label">Codes in Doc</div>
-                </div>
-                <div class="stat-card">
-                    <div class="value" id="generatedCount">0</div>
-                    <div class="label">Generated</div>
-                </div>
+            <div class="stats-simple">
+                <span id="totalCodes">0</span> codes in doc
             </div>
         </div>
         
@@ -262,7 +181,7 @@
             <strong>How to use:</strong>
             1. Click "Generate Unique Code" to create a new code<br>
             2. Place your cursor where you want the code<br>
-            3. Click "Insert at Cursor" to add it<br><br>
+            3. Click "Insert Code" to add it<br><br>
             The add-in automatically checks the entire document to ensure each code is unique!
         </div>
     </div>
