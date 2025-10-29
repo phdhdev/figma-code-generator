@@ -1,12 +1,10 @@
 /* global Word, Office */
+/* Version 1.1 - Fixed code counting and removed generatedCount */
 
 Office.onReady((info) => {
     if (info.host === Office.HostType.Word) {
         document.getElementById("generateBtn").onclick = generateUniqueCode;
         document.getElementById("insertBtn").onclick = insertCode;
-        
-        // Update document stats on load
-        updateDocumentStats();
     }
 });
 
@@ -70,7 +68,6 @@ async function generateUniqueCode() {
         // Display the code
         currentCode = newCode;
         document.getElementById("codeDisplay").textContent = newCode;
-        document.getElementById("codeDisplay").classList.remove("empty");
         document.getElementById("insertBtn").disabled = false;
         
         showStatus(`✓ Generated unique code: ${newCode}`, "success");
@@ -122,13 +119,9 @@ async function insertCode() {
         
         showStatus(`✓ Code ${currentCode} inserted successfully!`, "success");
         
-        // Update stats
-        await updateDocumentStats();
-        
         // Reset for next generation
         currentCode = null;
-        document.getElementById("codeDisplay").textContent = "Click Generate";
-        document.getElementById("codeDisplay").classList.add("empty");
+        document.getElementById("codeDisplay").textContent = "000-000";
         document.getElementById("insertBtn").disabled = true;
         
         disableButtons(false);
@@ -137,18 +130,6 @@ async function insertCode() {
         showStatus(`Error inserting code: ${error.message}`, "error");
         disableButtons(false);
         console.error(error);
-    }
-}
-
-/**
- * Update the document statistics
- */
-async function updateDocumentStats() {
-    try {
-        const existingCodes = await getAllCodesInDocument();
-        document.getElementById("totalCodes").textContent = existingCodes.size;
-    } catch (error) {
-        console.error("Error updating stats:", error);
     }
 }
 
