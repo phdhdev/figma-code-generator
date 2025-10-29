@@ -11,7 +11,6 @@ Office.onReady((info) => {
 });
 
 let currentCode = null;
-let generatedCount = 0;
 
 /**
  * Generate a random 6-digit code in format XXX-XXX
@@ -28,7 +27,8 @@ function generateCode() {
 async function getAllCodesInDocument() {
     return await Word.run(async (context) => {
         const body = context.document.body;
-        const searchResults = body.search("\\d{3}-\\d{3}", { matchWildcards: true });
+        // Word wildcard pattern: [0-9] for digits
+        const searchResults = body.search("[0-9]{3}-[0-9]{3}", { matchWildcards: true });
         
         searchResults.load("text");
         await context.sync();
@@ -72,9 +72,6 @@ async function generateUniqueCode() {
         document.getElementById("codeDisplay").textContent = newCode;
         document.getElementById("codeDisplay").classList.remove("empty");
         document.getElementById("insertBtn").disabled = false;
-        
-        generatedCount++;
-        document.getElementById("generatedCount").textContent = generatedCount;
         
         showStatus(`✓ Generated unique code: ${newCode}`, "success");
         disableButtons(false);
