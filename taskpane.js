@@ -45,7 +45,7 @@ async function getAllCodesInDocument() {
  */
 async function generateUniqueCode() {
     try {
-        showStatus("Generating unique code...", "info");
+        // showStatus("Generating unique code...", "info");
         disableButtons(true);
         
         // Get all existing codes
@@ -90,7 +90,7 @@ async function insertCode() {
     }
     
     try {
-        showStatus("Inserting code...", "info");
+        // showStatus("Inserting code...", "info");
         disableButtons(true);
         
         await Word.run(async (context) => {
