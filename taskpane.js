@@ -70,7 +70,7 @@ async function generateUniqueCode() {
         document.getElementById("codeDisplay").textContent = newCode;
         document.getElementById("insertBtn").disabled = false;
         
-        showStatus(`✓ Generated unique code: ${newCode}`, "success");
+        // showStatus(`✓ Generated unique code: ${newCode}`, "success");
         disableButtons(false);
         
     } catch (error) {
@@ -117,7 +117,7 @@ async function insertCode() {
             await context.sync();
         });
         
-        showStatus(`✓ Code ${currentCode} inserted successfully!`, "success");
+        // showStatus(`✓ Code ${currentCode} inserted successfully!`, "success");
         
         // Reset for next generation
         currentCode = null;
