@@ -11,12 +11,12 @@ Office.onReady((info) => {
 let currentCode = null;
 
 /**
- * Generate a random 6-digit code in format XXX-XXX
+ * Generate a random code in format fc-XXX-XXX
  */
 function generateCode() {
     const part1 = Math.floor(Math.random() * 900) + 100; // 100-999
     const part2 = Math.floor(Math.random() * 900) + 100; // 100-999
-    return `${part1}-${part2}`;
+    return `fc-${part1}-${part2}`;
 }
 
 /**
@@ -25,8 +25,8 @@ function generateCode() {
 async function getAllCodesInDocument() {
     return await Word.run(async (context) => {
         const body = context.document.body;
-        // Word wildcard pattern: [0-9] for digits
-        const searchResults = body.search("[0-9]{3}-[0-9]{3}", { matchWildcards: true });
+        // Word wildcard pattern for fc-XXX-XXX: fc- followed by 3 digits, hyphen, 3 digits
+        const searchResults = body.search("fc-[0-9]{3}-[0-9]{3}", { matchWildcards: true });
         
         searchResults.load("text");
         await context.sync();
@@ -51,17 +51,30 @@ async function generateUniqueCode() {
         // Get all existing codes
         const existingCodes = await getAllCodesInDocument();
         
+        // Maximum possible unique codes: 900 * 900 = 810,000
+        const MAX_UNIQUE_CODES = 810000;
+        
+        // Check if we've reached the maximum
+        if (existingCodes.size >= MAX_UNIQUE_CODES) {
+            throw new Error("You have reached the maximum quantity of unique numbers.");
+        }
+        
+        // Warn if getting close to maximum (within 1000 codes)
+        if (existingCodes.size >= MAX_UNIQUE_CODES - 1000) {
+            console.warn(`Warning: ${existingCodes.size} codes used out of ${MAX_UNIQUE_CODES} possible`);
+        }
+        
         // Generate a new code
         let newCode;
         let attempts = 0;
-        const maxAttempts = 1000;
+        const maxAttempts = 10000; // Increased from 1000
         
         do {
             newCode = generateCode();
             attempts++;
             
             if (attempts > maxAttempts) {
-                throw new Error("Unable to generate unique code after 1000 attempts");
+                throw new Error("Unable to generate unique code. You may have reached the maximum quantity of unique numbers.");
             }
         } while (existingCodes.has(newCode));
         
@@ -96,23 +109,13 @@ async function insertCode() {
         await Word.run(async (context) => {
             const selection = context.document.getSelection();
             
-            // First, insert the code
+            // Insert the code
             const insertedRange = selection.insertText(currentCode, Word.InsertLocation.end);
             
-            // Try to get formatting from the paragraph
-            try {
-                const paragraph = insertedRange.paragraphs.getFirst();
-                paragraph.font.load(["name", "size", "color"]);
-                await context.sync();
-                
-                // Apply the paragraph's formatting to our inserted code
-                insertedRange.font.name = paragraph.font.name;
-                insertedRange.font.size = paragraph.font.size;
-                insertedRange.font.color = paragraph.font.color;
-            } catch (formattingError) {
-                // If we can't get paragraph formatting, just leave the default formatting
-                console.log("Could not apply paragraph formatting:", formattingError);
-            }
+            // Apply fixed formatting: Arial, 8pt, gray color
+            insertedRange.font.name = "Arial";
+            insertedRange.font.size = 8;
+            insertedRange.font.color = "#BFBFBF"; // Light gray color
             
             // Move cursor after the inserted code
             insertedRange.select(Word.SelectionMode.end);
@@ -124,7 +127,7 @@ async function insertCode() {
         
         // Reset for next generation
         currentCode = null;
-        document.getElementById("codeDisplay").textContent = "000-000";
+        document.getElementById("codeDisplay").textContent = "fc-000-000";
         document.getElementById("insertBtn").disabled = true;
         
         disableButtons(false);
