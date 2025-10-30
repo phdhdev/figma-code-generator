@@ -99,18 +99,20 @@ async function insertCode() {
             // First, insert the code
             const insertedRange = selection.insertText(currentCode, Word.InsertLocation.end);
             
-            // Get the paragraph that contains the inserted text
-            const paragraph = insertedRange.paragraphs.getFirst();
-            paragraph.load("text");
-            
-            // Load the paragraph's font to get inherited formatting
-            paragraph.font.load(["name", "size", "color"]);
-            await context.sync();
-            
-            // Apply the paragraph's formatting to our inserted code
-            insertedRange.font.name = paragraph.font.name;
-            insertedRange.font.size = paragraph.font.size;
-            insertedRange.font.color = paragraph.font.color;
+            // Try to get formatting from the paragraph
+            try {
+                const paragraph = insertedRange.paragraphs.getFirst();
+                paragraph.font.load(["name", "size", "color"]);
+                await context.sync();
+                
+                // Apply the paragraph's formatting to our inserted code
+                insertedRange.font.name = paragraph.font.name;
+                insertedRange.font.size = paragraph.font.size;
+                insertedRange.font.color = paragraph.font.color;
+            } catch (formattingError) {
+                // If we can't get paragraph formatting, just leave the default formatting
+                console.log("Could not apply paragraph formatting:", formattingError);
+            }
             
             // Move cursor after the inserted code
             insertedRange.select(Word.SelectionMode.end);
@@ -128,7 +130,10 @@ async function insertCode() {
         disableButtons(false);
         
     } catch (error) {
-        showStatus(`Error inserting code: ${error.message}`, "error");
+        // Only show error if the insertion actually failed
+        if (!error.message.includes("InvalidArgument")) {
+            showStatus(`Error inserting code: ${error.message}`, "error");
+        }
         disableButtons(false);
         console.error(error);
     }
