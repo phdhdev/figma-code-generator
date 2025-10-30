@@ -94,38 +94,23 @@ async function insertCode() {
         disableButtons(true);
         
         await Word.run(async (context) => {
-            // Get the current selection/cursor position
             const selection = context.document.getSelection();
             
-            // Get the range just before the cursor to copy formatting from
-            const precedingRange = selection.getRange(Word.RangeLocation.before);
-            precedingRange.expandTo(precedingRange.getRange(Word.RangeLocation.start));
-            
-            // Load font properties from the preceding text
-            precedingRange.font.load(["name", "size", "color"]);
-            await context.sync();
-            
-            // Store the formatting from preceding text
-            let fontName = precedingRange.font.name;
-            let fontSize = precedingRange.font.size;
-            let fontColor = precedingRange.font.color;
-            
-            // If we couldn't get formatting from preceding text, use selection formatting
-            if (!fontName || fontName === "") {
-                selection.font.load(["name", "size", "color"]);
-                await context.sync();
-                fontName = selection.font.name;
-                fontSize = selection.font.size;
-                fontColor = selection.font.color;
-            }
-            
-            // Insert the code at the cursor
+            // First, insert the code
             const insertedRange = selection.insertText(currentCode, Word.InsertLocation.end);
             
-            // Apply the formatting to the inserted code
-            insertedRange.font.name = fontName;
-            insertedRange.font.size = fontSize;
-            insertedRange.font.color = fontColor;
+            // Get the paragraph that contains the inserted text
+            const paragraph = insertedRange.paragraphs.getFirst();
+            paragraph.load("text");
+            
+            // Load the paragraph's font to get inherited formatting
+            paragraph.font.load(["name", "size", "color"]);
+            await context.sync();
+            
+            // Apply the paragraph's formatting to our inserted code
+            insertedRange.font.name = paragraph.font.name;
+            insertedRange.font.size = paragraph.font.size;
+            insertedRange.font.color = paragraph.font.color;
             
             // Move cursor after the inserted code
             insertedRange.select(Word.SelectionMode.end);
