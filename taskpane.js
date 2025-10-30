@@ -112,13 +112,19 @@ async function insertCode() {
             // Insert the code
             const insertedRange = selection.insertText(currentCode, Word.InsertLocation.end);
             
-            // Apply fixed formatting: Arial, 8pt, gray color
+            // Apply fixed formatting: Arial, 8pt, light gray, plain style
             insertedRange.font.name = "Arial";
             insertedRange.font.size = 8;
             insertedRange.font.color = "#BFBFBF"; // Light gray color
+            insertedRange.font.bold = false; // Ensure not bold
+            insertedRange.font.italic = false; // Ensure not italic
+            insertedRange.font.underline = "None"; // Ensure not underlined
+            insertedRange.font.strikeThrough = false; // Ensure not strikethrough
+            insertedRange.font.superscript = false; // Ensure not superscript
+            insertedRange.font.subscript = false; // Ensure not subscript
             
-            // Move cursor after the inserted code
-            insertedRange.select(Word.SelectionMode.end);
+            // Don't move cursor - prevents page jumping
+            // insertedRange.select(Word.SelectionMode.end);
             
             await context.sync();
         });
