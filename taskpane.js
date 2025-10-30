@@ -97,22 +97,38 @@ async function insertCode() {
             // Get the current selection/cursor position
             const selection = context.document.getSelection();
             
-            // Load the font properties of the current selection
-            selection.font.load(["name", "size", "color"]);
+            // Get the range just before the cursor to copy formatting from
+            const precedingRange = selection.getRange(Word.RangeLocation.before);
+            precedingRange.expandTo(precedingRange.getRange(Word.RangeLocation.start));
+            
+            // Load font properties from the preceding text
+            precedingRange.font.load(["name", "size", "color"]);
             await context.sync();
             
-            // Store the current formatting
-            const fontName = selection.font.name;
-            const fontSize = selection.font.size;
-            const fontColor = selection.font.color;
+            // Store the formatting from preceding text
+            let fontName = precedingRange.font.name;
+            let fontSize = precedingRange.font.size;
+            let fontColor = precedingRange.font.color;
+            
+            // If we couldn't get formatting from preceding text, use selection formatting
+            if (!fontName || fontName === "") {
+                selection.font.load(["name", "size", "color"]);
+                await context.sync();
+                fontName = selection.font.name;
+                fontSize = selection.font.size;
+                fontColor = selection.font.color;
+            }
             
             // Insert the code at the cursor
-            const insertedRange = selection.insertText(currentCode, Word.InsertLocation.replace);
+            const insertedRange = selection.insertText(currentCode, Word.InsertLocation.end);
             
-            // Apply the original formatting to the inserted code
+            // Apply the formatting to the inserted code
             insertedRange.font.name = fontName;
             insertedRange.font.size = fontSize;
             insertedRange.font.color = fontColor;
+            
+            // Move cursor after the inserted code
+            insertedRange.select(Word.SelectionMode.end);
             
             await context.sync();
         });
